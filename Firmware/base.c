@@ -524,6 +524,23 @@ uint16_t bp_read_from_flash(const uint16_t page, const uint16_t address) {
   return word;
 }
 
+#ifdef USE_HWBASED_DELAY
+
+void bp_init_sysTimer(void){
+    T1CON = 0; // stops timer
+    TMR1 = 0; //reset timer counter
+    T1CONbits.TCKPS = 1; // x8 prescaler. For FCY = 16MIPS, 0.5us resolution.
+    PR1 = 0xFFFF; // Continuous Free-running timer
+    return;
+}
+
+void bp_start_sysTimer(void){
+    T1CONbits.TON = 1; // start timer
+    return;
+}
+
+#endif
+
 #ifdef BUSPIRATEV3
 
 /**
