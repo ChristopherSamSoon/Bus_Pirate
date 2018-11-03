@@ -215,7 +215,7 @@ unsigned int i2c_write(unsigned int c) {
 
   if (i2c_state.mode == I2C_TYPE_SOFTWARE) {
     bitbang_write_value(c);
-    c = bitbang_read_bit(ENABLE_I2C_SW_CLK_STRETCH); // stretch for ACK bit
+    c = bitbang_read_bit();
   } else {
 #ifdef BP_I2C_USE_HW_BUS
     hardware_i2c_write(c);
@@ -426,7 +426,7 @@ void i2c_macro(unsigned int c) {
       if (i2c_state.mode == I2C_TYPE_SOFTWARE) {
         bitbang_i2c_start();    // send start
         bitbang_write_value(i); // send address
-        c = bitbang_read_bit(ENABLE_I2C_SW_CLK_STRETCH); // look for ack
+        c = bitbang_read_bit(); // look for ack
       } else {
 #ifdef BP_I2C_USE_HW_BUS
         hardware_i2c_start();
@@ -1018,7 +1018,7 @@ void binary_io_enter_i2c_mode(void) {
           // if no ack, goto error
           bitbang_write_value(
               bus_pirate_configuration.terminal_input[j]); // send byte
-          if (bitbang_read_bit(ENABLE_I2C_SW_CLK_STRETCH) == 1)
+          if (bitbang_read_bit() == 1)
             goto I2C_write_read_error;
         }
 
@@ -1027,7 +1027,7 @@ void binary_io_enter_i2c_mode(void) {
               // Send restart
               bitbang_i2c_repeated_start();
               bitbang_write_value(i2Caddress | 0x01); // send address again
-              if (bitbang_read_bit(ENABLE_I2C_SW_CLK_STRETCH) == 1)
+              if (bitbang_read_bit() == 1)
                  goto I2C_write_read_error;
            }
         }
@@ -1123,7 +1123,7 @@ void binary_io_enter_i2c_mode(void) {
 
       for (i = 0; i < inByte; i++) {
         bitbang_write_value(user_serial_read_byte()); // JTR usb port //send byte
-        user_serial_transmit_character(bitbang_read_bit(ENABLE_I2C_SW_CLK_STRETCH));    // return ACK0 or NACK1
+        user_serial_transmit_character(bitbang_read_bit());    // return ACK0 or NACK1
       }
 
       break;

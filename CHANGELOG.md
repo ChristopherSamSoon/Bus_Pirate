@@ -1,12 +1,3 @@
-## Changes from mainbranch v7.1 to v7.1-1
-
-### Changes applicable to both hardware versions:
-
-* I2C read then write command is fixed
-* Bug fix in the software delay function. Fix involves the use of a hardware based free running timer( TIMER1) that acts as the system tick reference. (#23)
-* I2C clock stretching feature is now implemented (#90)
-
-
 ## Changes from 7.0 to 7.1:
 
 ### Bus Pirate v3 specific changes:

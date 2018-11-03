@@ -22,7 +22,7 @@
 #include "base.h"
 #include "bitbang.h"
 
-inline bool raw_read_bit(void) { return bitbang_read_bit(false); }
+inline bool raw_read_bit(void) { return bitbang_read_bit(); }
 
 inline uint16_t raw_read_pin(void) { return bitbang_read_miso(); }
 

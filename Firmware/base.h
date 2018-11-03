@@ -127,7 +127,7 @@
 /**
  * @brief Firmware version string, used at startup and for the 'i' command.
  */
-#define BP_FIRMWARE_STRING "Christopher Sam Soon - Community Firmware v7.1-1"
+#define BP_FIRMWARE_STRING "Community Firmware v7.1 - goo.gl/gCzQnW "
 
 #ifdef BUSPIRATEV3
 #include "hardwarev3.h"
@@ -248,108 +248,6 @@ void bp_adc_continuous_probe(void);
  */
 void bp_write_formatted_integer(const uint16_t value);
 
-#ifdef USE_HWBASED_DELAY
-/**
- * @brief Initialises the system clock timer that will be used for delay
- * functions. Sets timer resolution at 0.5 microseconds
- *
- */
-void bp_init_sysTimer(void);
-
-/**
- * @brief Starts the system clock timer that will be used for delay functions.
- *
- */
-void bp_start_sysTimer(void);
-
-
-/**
- * @brief Internal function used to delay for a specified amount of microseconds.
- * Assumes clock timer has been initialized properly to 0.5us tick resolution
- * Assumes that there is no CPU interrupts that is longer than the system clock
- * overflow period. (~32ms)
- *
- * @param[in] microseconds to wait. Range 0 ... 0x7FFFFFFF
- */
-static inline void bp_delay_us_l(uint32_t microseconds){
-    uint16_t timer_start, ticks_elapsed, timer_val;
-    uint32_t timer_ticks_l;
-
-    if(microseconds ==0){
-        return;
-    }
-    timer_start = TMR1;
-    timer_val = timer_start;
-    timer_ticks_l = (microseconds << 1) - 1; // based on 0.5us timer resolution
-
-    while(1){
-        timer_val = TMR1;
-        // Carried out as unsigned operation to cater for overflow events
-        ticks_elapsed = (uint16_t)((uint16_t)timer_val - (uint16_t)timer_start);
-
-        if((uint32_t)ticks_elapsed >= timer_ticks_l){
-            break;
-        }else{
-            if(ticks_elapsed >= 0x7FFF){
-                timer_ticks_l = timer_ticks_l - (uint32_t)ticks_elapsed;
-                timer_start = timer_val;
-            }
-        }
-    }
-}
-
-/**
- * @brief Internal function used to delay for a specified amount of microseconds.
- * Assumes clock timer has been initialized properly to 0.5us tick resolution
- * Assumes that there is no CPU interrupts that is longer than the system clock
- * overflow period. (~32ms)
- *
- * @param[in] microseconds to wait. Range 0 ... 0x7FFFFFFF
- */
-static inline void bp_delay_us_s(uint16_t microseconds){
-    uint16_t timer_start, ticks_elapsed, timer_val;
-    uint16_t timer_ticks_s;
-
-    if(microseconds ==0){
-        return;
-    }
-    
-    timer_val = timer_start = TMR1;
-    timer_ticks_s = (microseconds << 1) - 1; // based on 0.5us timer resolution
-
-   do{
-        timer_val = TMR1;
-        // Carried out as unsigned operation to cater for overflow events
-        ticks_elapsed = (uint16_t)(timer_val - timer_start);
-   }while(ticks_elapsed < timer_ticks_s);
-}
-
-/**
- * @brief Pauses execution for the given amount of milliseconds.
- *
- * @param[in] milliseconds the amount of milliseconds to wait.
- */
-static inline void bp_delay_ms(uint16_t milliseconds){
-    uint32_t temp = (uint32_t)milliseconds * 1000;
-    bp_delay_us_l(temp);
-}
-
-/**
- * @brief Pauses execution for the given amount of microseconds.
- *
- * @param[in] microseconds the amount of microseconds to wait.
- */
-static inline void bp_delay_us(uint16_t microseconds){
-
-    if(microseconds < 0x3FFF){
-        bp_delay_us_s(microseconds);
-    }else{
-        bp_delay_us_l(microseconds);
-    }
-}
-
-#else
-
 /**
  * @brief Pauses execution for the given amount of milliseconds.
  *
@@ -357,14 +255,12 @@ static inline void bp_delay_us(uint16_t microseconds){
  */
 #define bp_delay_ms(milliseconds) __delay_ms(milliseconds)
 
-
 /**
  * @brief Pauses execution for the given amount of microseconds.
  *
  * @param[in] microseconds the amount of microseconds to wait.
  */
 #define bp_delay_us(microseconds) __delay_us(microseconds)
-#endif
 
 /**
  * @brief Writes the given buffer to the serial port.

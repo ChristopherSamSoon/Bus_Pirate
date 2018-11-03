@@ -552,35 +552,4 @@
  */
 #define BP_TERMINAL_BUFFER_SIZE 4096
 
-/**
- * Define USE_HWBASED_DELAY to enable the use of hardware timer 1 (TIMER1) as
- * a free running timer that is used to assist delay functions thorough the
- * software.
- *
- * @warning When defined, TIMER1 is configured and used as a free running timer
- * TIMER1 is configured with 0.5 microsecond of resolution with FCY = 16MIPS
- * If FCY changes, then the initialization functions have to be modified to keep
- * 0.5 us resolution tick
- */
-#define USE_HWBASED_DELAY
-
-/**
- * Set to true to enable software I2C clock stretching.
- *
- */
-#define ENABLE_I2C_SW_CLK_STRETCH     true
-
-/**
- * Sets the approximate maximum number of microseconds to wait for clock
- * stretching in software I2C mode. Only used if ENABLE_I2C_SW_CLOCK_STRETCH
- * is set to true
- * Range: 0 ... 0x7FFFFFFFF
- *
- * @warning: because of software overhead, actual delay will be slightly longer
- * than the specified value. This error increases as the delay gets longer.
- * Therefore, the limit specified is to be treated as an approximate value
- *
- */
-#define I2C_SW_CLK_STRETCH_MAXWAIT_US     (uint32_t)(1000000ULL)
-
 #endif /* !BP_CONFIGURATION_H */
