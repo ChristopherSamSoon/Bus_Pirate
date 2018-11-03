@@ -25,16 +25,26 @@
 #include "base.h"
 
 /* Values are in microseconds. */
-
+#ifdef USE_HWBASED_DELAY
+// Removed 1us to cater for function overhead
 #define BB_5KHZSPEED_SETTLE 20
-#define BB_5KHZSPEED_CLOCK 100
-#define BB_50KHZSPEED_SETTLE 2
-#define BB_50KHZSPEED_CLOCK 10
+#define BB_5KHZSPEED_CLOCK 80
+#define BB_50KHZSPEED_SETTLE 1
+#define BB_50KHZSPEED_CLOCK 8
 #define BB_100KHZSPEED_SETTLE 1
-#define BB_100KHZSPEED_CLOCK 5
+#define BB_100KHZSPEED_CLOCK 3
 #define BB_MAXSPEED_SETTLE 0
 #define BB_MAXSPEED_CLOCK 0
-
+#else
+#define BB_5KHZSPEED_SETTLE 19
+#define BB_5KHZSPEED_CLOCK 80
+#define BB_50KHZSPEED_SETTLE 1
+#define BB_50KHZSPEED_CLOCK 9
+#define BB_100KHZSPEED_SETTLE 1
+#define BB_100KHZSPEED_CLOCK 4
+#define BB_MAXSPEED_SETTLE 0
+#define BB_MAXSPEED_CLOCK 0
+#endif
 #define DELAY_PROFILES_MAX_INDEX 3
 
 extern mode_configuration_t mode_configuration;
@@ -204,14 +214,29 @@ uint16_t bitbang_read_value(void) {
   return value;
 }
 
-bool bitbang_read_bit(void) {
-  bool bit_value;
+bool bitbang_read_bit(bool CLKStretch) {
+  bool bit_value, clk_value;
+  uint32_t max_wait;
 
   /* Set the MISO pin as input. */
   bitbang_read_pin(miso_pin);
 
   /* Set CLK high. */
   bitbang_set_pins_high(CLK, delay_profile->clock);
+
+  /* Wait for CLK to go high if desired*/
+  if(CLKStretch == true){
+      max_wait =0;
+      do{          
+          clk_value = IOPOR & CLK; // check if clock is released by slave
+          if(clk_value != 0){
+              break; // clk signal released by slave, exit
+          }
+          bp_delay_us(1); // wait 1us
+          max_wait = max_wait + 1;
+          
+      }while(max_wait < I2C_SW_CLK_STRETCH_MAXWAIT_US);
+  }
 
   /* Read value. */
   bit_value = bitbang_read_pin(miso_pin);
@@ -221,6 +246,8 @@ bool bitbang_read_bit(void) {
 
   return bit_value;
 }
+
+
 
 void bitbang_write_bit(const bool state) {
   /* Set the output pin to the given state. */

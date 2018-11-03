@@ -4,6 +4,7 @@ This repository was forked on 03 May 2018 from the repo "BusPirate/Bus_Pirate" m
 
 The aim of this fork is to fix I2C protocol bugs that are present in the Bus Pirate Firmware, with the intention that it will be merged again into the main repo.
 
+For detailed changes, refer to CHANGELOG.md
 
 ## Protocols
     

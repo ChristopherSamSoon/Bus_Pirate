@@ -160,6 +160,13 @@ void initialize_board(void) {
   while (delay--) {
   }
 
+#ifdef USE_HWBASED_DELAY
+  /* Setup hardware based delay timer if used */
+  bp_init_sysTimer();
+  bp_start_sysTimer();
+  
+#endif
+
 /* Set up the UART port pins. */
 
 #ifdef BUSPIRATEV3

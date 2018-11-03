@@ -99,9 +99,12 @@ uint16_t bitbang_read_value(void);
 /**
  * Reads a single bit from the MISO pin.
  *
+ * @param[in] set to TRUE for enabling clock stretching (only for I2C mode), set
+ * to false for default behaviour
+ * 
  * @return true if the MISO pin is HIGH, false otherwise.
  */
-bool bitbang_read_bit(void);
+bool bitbang_read_bit(bool CLKStretch);
 
 /**
  * Writes the given bit to the bus via the MOSI pin.

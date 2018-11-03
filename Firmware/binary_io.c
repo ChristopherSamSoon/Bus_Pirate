@@ -649,7 +649,7 @@ void binwire(void) {
                         user_serial_transmit_character(i);
                         break;
                     case 7://read bit
-                        user_serial_transmit_character(bitbang_read_bit());
+                        user_serial_transmit_character(bitbang_read_bit(false));
                         break;
                     case 8://peek bit
                         user_serial_transmit_character(bitbang_read_miso());
